@@ -26,6 +26,7 @@ import (
 	"github.com/schollz/peerdiscovery"
 	"github.com/schollz/progressbar/v3"
 
+	"github.com/atotto/clipboard"
 	"github.com/schollz/croc/v9/src/comm"
 	"github.com/schollz/croc/v9/src/compress"
 	"github.com/schollz/croc/v9/src/crypt"
@@ -629,7 +630,9 @@ func (c *Client) Send(filesInfo []FileInfo, emptyFoldersToTransfer []FileInfo, t
 	if c.Options.RelayPassword != models.DEFAULT_PASSPHRASE {
 		flags.WriteString("--pass " + c.Options.RelayPassword + " ")
 	}
-	fmt.Fprintf(os.Stderr, "Code is: %[1]s\nOn the other computer run\n\ncroc %[2]s%[1]s\n", c.Options.SharedSecret, flags.String())
+	fmt.Fprintf(os.Stderr, "The following url has been copied to your clipboard.\nhttps://up.buggold.com/%[1]s\n", c.Options.SharedSecret)
+	// Attempt to write the string to the clipboard
+	clipboard.WriteAll(c.Options.SharedSecret)
 	if c.Options.Ask {
 		machid, _ := machineid.ID()
 		fmt.Fprintf(os.Stderr, "\rYour machine ID is '%s'\n", machid)
