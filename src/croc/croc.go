@@ -190,6 +190,9 @@ func New(ops Options) (c *Client, err error) {
 		return
 	}
 
+	// Check if SharedSecret contains "croc:" and remove it
+	c.Options.SharedSecret = strings.TrimPrefix(c.Options.SharedSecret, "croc:")
+
 	c.conn = make([]*comm.Comm, 16)
 
 	// initialize throttler
@@ -630,7 +633,7 @@ func (c *Client) Send(filesInfo []FileInfo, emptyFoldersToTransfer []FileInfo, t
 	if c.Options.RelayPassword != models.DEFAULT_PASSPHRASE {
 		flags.WriteString("--pass " + c.Options.RelayPassword + " ")
 	}
-	fmt.Fprintf(os.Stderr, "The following url has been copied to your clipboard.\nhttps://up.buggold.com/%[1]s\n", c.Options.SharedSecret)
+	fmt.Fprintf(os.Stderr, "The following url has been copied to your clipboard.\ncroc:%[1]s\n", c.Options.SharedSecret)
 	// Attempt to write the string to the clipboard
 	clipboard.WriteAll(c.Options.SharedSecret)
 	if c.Options.Ask {
