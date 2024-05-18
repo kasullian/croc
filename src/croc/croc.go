@@ -633,13 +633,18 @@ func (c *Client) Send(filesInfo []FileInfo, emptyFoldersToTransfer []FileInfo, t
 	if c.Options.RelayPassword != models.DEFAULT_PASSPHRASE {
 		flags.WriteString("--pass " + c.Options.RelayPassword + " ")
 	}
-	fmt.Fprintf(os.Stderr, "The following url has been copied to your clipboard.\ncroc:%[1]s\n", c.Options.SharedSecret)
-	// Attempt to write the string to the clipboard
-	clipboard.WriteAll(c.Options.SharedSecret)
-	if c.Options.Ask {
-		machid, _ := machineid.ID()
-		fmt.Fprintf(os.Stderr, "\rYour machine ID is '%s'\n", machid)
+
+	// Construct the croc URL
+	crocURL := fmt.Sprintf("croc:%[1]s", c.Options.SharedSecret)
+
+	// Print the URL to stderr
+	fmt.Fprintf(os.Stderr, "The following url has been copied to your clipboard.\n%s\n", crocURL)
+
+	// Attempt to write the URL to the clipboard
+	if err := clipboard.WriteAll(crocURL); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to write to clipboard: %v\n", err)
 	}
+
 	// // c.spinner.Suffix = " waiting for recipient..."
 	// c.spinner.Start()
 	// create channel for quitting
